@@ -1,0 +1,16 @@
+# Ignorar entorno virtual de Python
+chatpdf-backend/env/
+
+# Ignorar archivo de variables de entorno
+chatpdf-backend/.env
+
+# Ignorar cachés de Python
+chatpdf-backend/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar archivos del sistema y editores
+.DS_Store
+.vscode/

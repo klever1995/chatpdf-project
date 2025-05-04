@@ -1,0 +1,126 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Estilos para la cabecera institucional - Versión Grande */
+.app-header {
+  background: linear-gradient(135deg, #003366 0%, #004080 100%);
+  color: white;
+  padding: 2.5rem 1.5rem; /* Más padding vertical */
+  text-align: center;
+  border-bottom: 6px solid #FFD700; /* Borde más grueso */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra para profundidad */
+}
+
+.university-info {
+  max-width: 1800px; /* Contenedor más ancho */
+  margin: 0 auto 2rem; /* Más margen inferior */
+  padding: 1.5rem; /* Más padding interno */
+  background: rgba(255, 255, 255, 0.15); /* Fondo más visible */
+  border-radius: 12px; /* Bordes más redondeados */
+  backdrop-filter: blur(4px); /* Efecto de vidrio esmerilado */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil */
+}
+
+.logo-and-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px; /* Más espacio entre logo y texto */
+}
+
+.university-logo {
+  height: 150px; /* Logo mucho más grande */
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)); /* Sombra al logo */
+}
+
+.university-text {
+  text-align: left;
+}
+
+.university-name {
+  margin: 0;
+  font-size: 3rem; /* Texto mucho más grande */
+  color: white;
+  font-weight: 700; /* Negrita más marcada */
+  letter-spacing: 0.5px; /* Espaciado entre letras */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Sombra de texto */
+}
+
+.course-info {
+  margin: 0.5rem 0 0; /* Más margen superior */
+  font-size: 2rem; /* Texto más grande */
+  color: #FFF;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.app-title-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Títulos principales más grandes */
+.app-title-container h1 {
+  margin-bottom: 0.75rem;
+  font-size: 2rem; /* Título principal muy grande */
+  font-weight: 600;
+}
+
+.app-title-container p {
+  margin-top: 0;
+  font-size: 1.5rem; /* Subtítulo más grande */
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+/* Versión responsive para móviles */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1.8rem 1rem;
+  }
+  
+  .university-info {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .logo-and-name {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .university-logo {
+    height: 80px;
+  }
+  
+  .university-name {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  .course-info {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  
+  .app-title-container h1 {
+    font-size: 2rem;
+  }
+  
+  .app-title-container p {
+    font-size: 1rem;
+  }
+}

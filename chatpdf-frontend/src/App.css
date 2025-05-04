@@ -1,0 +1,361 @@
+/* Estilos generales de la aplicación */
+.App {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f7fc;
+}
+
+/* Cabecera principal */
+.app-header {
+  background-color: #1f2937;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 4px solid #3b82f6;
+}
+
+/* Estilos base para títulos y párrafos */
+h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+p {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Contenedor principal de contenido */
+.content {
+  padding: 2rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sección de subida de archivos */
+.upload-section {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.upload-section h2 {
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulario de subida */
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* BOTONES - Versión corregida y unificada */
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.back-button, .submit-button {
+  flex: 1;
+  max-width: 48%;
+  padding: 12px 5px; /* Ajuste clave: mismo padding vertical/horizontal */
+  font-size: 1.2rem;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  
+  /* Sistema de caja consistente */
+  box-sizing: border-box;
+  height: 50px; /* Altura fija idéntica */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button {
+  background: #6c757d;
+  color: white;
+}
+
+.submit-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.submit-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Efectos hover */
+.back-button:hover, .submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Input para seleccionar archivo */
+.file-input {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  font-size: 1.3rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Sección de respuesta */
+.response-section {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.response-text {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.content {
+  max-width: 1000px; 
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.scenario-section h2 {
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  font-size: 2.2rem;
+}
+
+/* Formulario de escenario */
+.scenario-form {
+  width: 90vw;
+  max-width: none;
+  margin-left: calc(-45vw + 50%);
+  padding: 20px;
+  box-sizing: border-box;
+  border: none;
+  background: none;
+}
+
+
+
+/* Área de texto para el escenario */
+.scenario-input {
+  width: 100%;
+  min-height: 400px;  
+  font-size: 1.4rem;  
+  line-height: 1.8;
+  padding: 25px;
+  resize: vertical;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+
+/* Caja de respuesta */
+.response-box {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+/* Respuesta de la IA */
+.ai-response {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+
+/* Animación de carga */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+/* Caja de comparación */
+.comparison-box {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+/* Puntuación de similitud */
+.similarity-score {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.score-circle {
+  width: 300px;      
+  height: 300px;      
+  border-radius: 50%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;    /* Aumenté de 24px a 36px para texto más grande */
+  font-weight: bold;
+  color: white;
+  margin: 20px auto;  
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
+  background: #3b82f6; 
+}
+
+.interpretation {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Comparación de respuestas */
+.responses-comparison {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.response-column {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Respuesta del usuario */
+.user-response {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+/* Input del usuario */
+.user-input {
+  width: 100%;
+  height: 120px;
+  padding: 2px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-size: 1.2rem; /* Este controla el tamaño de la letra al escribir */
+}
+
+/* Resultados de comparación */
+.comparison-results {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.similarity-section, .evaluation-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.evaluation-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Contenedor de puntuaciones */
+.scores-container {
+  display: flex;
+  gap: 20px;
+  margin: 15px 0;
+}
+
+.score-box {
+  flex: 1;
+}
+
+.score-bar {
+  height: 24px;
+  background: #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.score-fill {
+  height: 100%;
+  background: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: width 0.5s ease;
+}
+
+/* Caja de feedback */
+.feedback-box {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  border-left: 4px solid #007bff;
+}
+
+/* Indicador de respuesta correcta */
+.correct-badge {
+  display: inline-block;
+  background: #28a745;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+  .comparison-results {
+    flex-direction: column;
+  }
+  
+  .scores-container {
+    flex-direction: column;
+  }
+}
