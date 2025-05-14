@@ -1,361 +1,638 @@
-/* Estilos generales de la aplicación */
+/* ESTILOS GENERALES */
 .App {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #f4f7fc;
-}
-
-/* Cabecera principal */
-.app-header {
-  background-color: #1f2937;
-  color: white;
-  padding: 2rem;
   text-align: center;
-  border-bottom: 4px solid #3b82f6;
-}
-
-/* Estilos base para títulos y párrafos */
-h1 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 100%;
   margin: 0;
-  font-size: 2.5rem;
+  padding: 0;
 }
 
-p {
-  margin-top: 0.5rem;
+/* CABECERA INSTITUCIONAL (A TODO ANCHO) */
+.app-header {
+  background-color: #1a365d;
+  color: white;
+  padding: 25px 0;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.university-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.logo-and-name {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.university-logo {
+  height: 100px; /* Logo más grande */
+  width: auto;
+}
+
+.university-text {
+  text-align: left;
+}
+
+.university-name {
+  margin: 0;
+  font-size: 2rem; /* Texto más grande */
+  font-weight: bold;
+}
+
+.course-info {
+  margin: 5px 0 0;
   font-size: 1.2rem;
 }
 
-/* Contenedor principal de contenido */
-.content {
-  padding: 2rem;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.app-header h1 {
+  font-size: 2.2rem;
+  margin: 10px 0;
 }
 
-/* Sección de subida de archivos */
+.app-header p {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+/* FORMULARIO DE CARGA (MÁS AMPLIO) */
+.content {
+  padding: 0 20px;
+}
+
 .upload-section {
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 3rem;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 2rem;
-  text-align: center;
+  background: white;
+  padding: 40px 20px;
+  max-width: 100%;
 }
 
 .upload-section h2 {
-  font-size: 2.2rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #1a365d;
 }
 
-/* Formulario de subida */
 .upload-form {
   display: flex;
   flex-direction: column;
+  gap: 25px;
   align-items: center;
 }
 
-/* BOTONES - Versión corregida y unificada */
-.button-group {
-  display: flex;
-  gap: 15px;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 20px;
-}
-
-.back-button, .submit-button {
-  flex: 1;
-  max-width: 48%;
-  padding: 12px 5px; /* Ajuste clave: mismo padding vertical/horizontal */
-  font-size: 1.2rem;
-  text-align: center;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  
-  /* Sistema de caja consistente */
-  box-sizing: border-box;
-  height: 50px; /* Altura fija idéntica */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-button {
-  background: #6c757d;
-  color: white;
+.file-input {
+  padding: 15px;
+  border: 3px dashed #cbd5e0;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 800px; /* Más ancho */
+  font-size: 1.1rem;
 }
 
 .submit-button {
-  background: #3b82f6;
+  background-color: #2b6cb0;
   color: white;
-}
-
-.submit-button:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Efectos hover */
-.back-button:hover, .submit-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* Input para seleccionar archivo */
-.file-input {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  font-size: 1.3rem;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-/* Sección de respuesta */
-.response-section {
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 600px;
-  text-align: center;
-}
-
-.response-text {
-  margin-top: 1rem;
-  font-size: 1.2rem;
-  color: #333;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.content {
-  max-width: 1000px; 
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.scenario-section h2 {
-  text-align: center;
-  width: 100%;
-  margin: 0;
-  font-size: 2.2rem;
-}
-
-/* Formulario de escenario */
-.scenario-form {
-  width: 90vw;
-  max-width: none;
-  margin-left: calc(-45vw + 50%);
-  padding: 20px;
-  box-sizing: border-box;
   border: none;
-  background: none;
-}
-
-
-
-/* Área de texto para el escenario */
-.scenario-input {
-  width: 100%;
-  min-height: 400px;  
-  font-size: 1.4rem;  
-  line-height: 1.8;
-  padding: 25px;
-  resize: vertical;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
+  padding: 18px 35px; /* Botón más grande */
   border-radius: 8px;
-}
-
-
-/* Caja de respuesta */
-.response-box {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem; /* Texto más grande */
+  font-weight: bold;
+  transition: background-color 0.3s;
   margin-top: 20px;
 }
 
-/* Respuesta de la IA */
-.ai-response {
-  background: white;
-  padding: 15px;
-  border-radius: 4px;
-  margin: 15px 0;
+.submit-button:hover {
+  background-color: #2c5282;
+}
+
+.submit-button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
 }
 
 
-/* Animación de carga */
+
+
+
+/* SECCIÓN DE GENERACIÓN DE CASO DE USO */
+.use-case-section {
+  background: white;
+  padding: 40px;
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.use-case-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.generate-button {
+  background-color: #4c51bf;
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.generate-button:hover {
+  background-color: #434190;
+}
+
+.generate-button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.or-divider {
+  text-align: center;
+  color: #718096;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.use-case-input {
+  width: 100%;
+  min-height: 200px;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  resize: vertical;
+}
+
+.use-case-input:focus {
+  outline: none;
+  border-color: #4299e1;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.back-button {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back-button:hover {
+  background-color: #cbd5e0;
+}
+
+
+
+
+
+
+/* Añade estos estilos al final de tu CSS */
+
+/* MENSAJES DE ERROR */
+.error-message {
+  color: #e53e3e;
+  background-color: #fff5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border: 1px solid #fc8181;
+  font-weight: 500;
+}
+
+/* SPINNER DE CARGA */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.loading-spinner {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255,255,255,.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
-  margin-right: 8px;
+/* MEJORAS PARA BOTONES CON CARGA */
+button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
 }
 
-/* Caja de comparación */
-.comparison-box {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 20px;
-}
 
-/* Puntuación de similitud */
-.similarity-score {
-  text-align: center;
-  margin-bottom: 30px;
-}
 
-.score-circle {
-  width: 300px;      
-  height: 300px;      
-  border-radius: 50%; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 72px;    /* Aumenté de 24px a 36px para texto más grande */
-  font-weight: bold;
-  color: white;
-  margin: 20px auto;  
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
-  background: #3b82f6; 
-}
 
-.interpretation {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
 
-/* Comparación de respuestas */
-.responses-comparison {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
 
-.response-column {
-  flex: 1;
+
+
+
+/* ESTILOS ACTUALIZADOS */
+.analysis-section {
   background: white;
-  padding: 15px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 30px;
+  width: 95%; /* Ocupa casi todo el ancho */
+  max-width: none; /* Elimina el límite máximo */
+  margin: 20px auto;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Respuesta del usuario */
-.user-response {
+.case-review {
   background: #f8f9fa;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-/* Input del usuario */
-.user-input {
-  width: 100%;
-  height: 120px;
-  padding: 2px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  resize: vertical;
-  font-size: 1.2rem; /* Este controla el tamaño de la letra al escribir */
-}
-
-/* Resultados de comparación */
-.comparison-results {
-  display: flex;
-  gap: 30px;
+  padding: 25px;
   margin-bottom: 30px;
-  flex-wrap: wrap;
+  border-left: 4px solid #4299e1;
+  text-align: left; /* Alineación izquierda */
 }
 
-.similarity-section, .evaluation-section {
-  flex: 1;
-  min-width: 300px;
+.case-content {
+  line-height: 1.7;
+  white-space: pre-line;
+  font-size: 1.1rem; /* Tamaño de fuente aumentado */
 }
 
-.evaluation-section {
-  background: #f8f9fa;
+.solution-textarea {
+  width: 100%;
+  min-height: 250px; /* Más alto */
   padding: 20px;
+  border: 2px solid #e2e8f0;
   border-radius: 8px;
+  font-size: 1.1rem; /* Texto más grande */
+  resize: vertical;
+  margin-top: 15px;
 }
 
-/* Contenedor de puntuaciones */
-.scores-container {
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilos para la comparación */
+.comparison-section {
+  padding: 30px;
+  width: 95%;
+  margin: 20px auto;
+}
+
+.solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin: 30px 0;
+}
+
+.solution-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-top: 4px solid #4299e1;
+}
+
+.solution-card h3 {
+  color: #2b6cb0;
+  margin-top: 0;
+}
+
+.solution-content {
+  white-space: pre-line;
+  line-height: 1.6;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+
+
+
+
+
+
+/* Estilos para comparación textual */
+.textual-comparison {
   display: flex;
-  gap: 20px;
-  margin: 15px 0;
+  gap: 40px;
+  justify-content: center;
+  margin: 30px 0;
 }
 
-.score-box {
-  flex: 1;
+.similarity-chart {
+  text-align: center;
 }
 
-.score-bar {
-  height: 24px;
-  background: #e9ecef;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.score-fill {
-  height: 100%;
-  background: #4CAF50;
-  color: white;
+.circle-chart {
+  width: 160px;  /* Aumentado de 120px a 160px */
+  height: 160px; /* Aumentado de 120px a 160px */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  margin: 0 auto 10px;
+}
+
+.circle-chart span {
+  font-size: 1.8rem;  /* Opcional: Aumentar tamaño del texto */
+  font-weight: bold;
+  background: white;
+  width: 110px;      /* Aumentado de 80px a 110px */
+  height: 110px;     /* Aumentado de 80px a 110px */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.textual-title {
+  color: #2d3748;
+  text-align: center;
+  margin: 20px 0 10px 0;
+  font-size: 1.3rem;
+  padding-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+/* Nuevos estilos para el botón de comparar */
+.compare-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0;
+  padding-right: 20px;
+}
+
+.compare-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.compare-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.compare-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.solutions-grid {
+  margin-bottom: 30px;
+}
+
+
+
+
+
+
+
+
+
+/* Estilos para los botones de acción */
+.comparison-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0;
+  padding: 0 20px;
+}
+
+.back-button {
+  background-color: #e2e8f0;
+  color: #2d3748;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.back-button:hover {
+  background-color: #cbd5e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.compare-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.compare-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.compare-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+
+
+
+
+
+
+/*Estilos para la comparacion cualitativa*/
+.qualitative-analysis {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.qualitative-analysis h3,
+.qualitative-analysis h4 {
+  font-size: 1.4rem; /* Títulos más grandes */
+  color: #2d3748;
+  margin-bottom: 15px;
+}
+
+.qualitative-metrics {
+  margin: 20px 0;
+}
+
+.bars-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.bar-wrapper {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 15px;
+}
+
+.label {
+  font-weight: 500;
+  text-align: right;
+  font-size: 1.1rem; /* Ajuste consistente */
+}
+
+.bar-background {
+  height: 30px;
+  background: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: white;
   font-weight: bold;
   transition: width 0.5s ease;
+  font-size: 1rem; /* Tamaño específico para porcentajes */
 }
 
-/* Caja de feedback */
-.feedback-box {
-  background: white;
+.azure-bar { background-color: #4299e1; }
+.gemini-bar { background-color: #ed8936; }
+.user-bar { background-color: #48bb78; }
+
+.qualitative-feedback {
+  background: #f8fafc;
   padding: 15px;
   border-radius: 8px;
-  margin-top: 15px;
-  border-left: 4px solid #007bff;
+  margin-top: 20px;
+  border-left: 4px solid #4a5568;
+  font-size: 1.1rem; /* Tamaño aumentado */
 }
 
-/* Indicador de respuesta correcta */
-.correct-badge {
-  display: inline-block;
-  background: #28a745;
+.tag {
+  padding: 5px 15px;
+  border-radius: 20px;
   color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  margin-top: 10px;
-  font-size: 14px;
+  font-weight: bold;
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 1rem; /* Tamaño para etiquetas */
 }
 
-/* Estilos responsive */
-@media (max-width: 768px) {
-  .comparison-results {
-    flex-direction: column;
-  }
-  
-  .scores-container {
-    flex-direction: column;
-  }
+.azure-tag { background-color: #4299e1; }
+.gemini-tag { background-color: #ed8936; }
+.user-tag { background-color: #48bb78; }
+
+
+
+
+
+
+
+/* Estilo para el contenedor principal */
+
+.combined-solution {
+  margin-top: 30px;
+  padding: 25px; /* Más espacio interno */
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #6b46c1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Título centrado y más destacado */
+.combined-solution h3 {
+  color: #2d3748;
+  margin: 0 auto 20px auto; /* Centrado horizontal */
+  font-size: 1.6rem; /* Más grande (1.4rem → 1.6rem) */
+  text-align: center; /* Texto centrado */
+  display: flex;
+  justify-content: center; /* Centra el ícono y texto juntos */
+  align-items: center;
+  gap: 10px;
+  width: fit-content; /* Ajusta al contenido */
+}
+
+/* Texto de solución aumentado */
+.combined-solution .solution-content p {
+  margin-bottom: 12px;
+  line-height: 1.7;
+  color: #010102;
+  font-size: 1.1rem; /* Tamaño aumentado (base suele ser 1rem) */
+}
+
+/* Ajuste para listas */
+.combined-solution ul {
+  font-size: 1.1rem; /* Consistent con los párrafos */
+}
+
+
+
+
+
+
+.download-button {
+  padding: 12px 24px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.download-button:hover {
+  background-color: #3e8e41 !important;
 }

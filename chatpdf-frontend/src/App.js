@@ -3,243 +3,308 @@ import './App.css';
 import logo from './logo.png';
 
 function App() {
+  // Estados para carga de PDF
   const [file, setFile] = useState(null);
   const [pdfText, setPdfText] = useState('');
-  const [scenario, setScenario] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [userResponse, setUserResponse] = useState('');
-  const [similarity, setSimilarity] = useState(null);
-  const [evaluation, setEvaluation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('upload');
+  const [error, setError] = useState(null);
+  
+  // Estados para generación de caso de uso y solución
+  const [useCase, setUseCase] = useState('');
+  const [userSolution, setUserSolution] = useState('');
+  const [activeStep, setActiveStep] = useState('upload');
+
+  // Estados para mostrar las tres soluciones 
+  const [azureResponse, setAzureResponse] = useState('');
+  const [geminiResponse, setGeminiResponse] = useState('');
+  const [comparisonLoading, setComparisonLoading] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+  const [combinedResponse, setCombinedResponse] = useState('');
+  const [showDownloadButton, setShowDownloadButton] = useState(false);
+  const BASE_URL = "https://f653-201-183-101-131.ngrok-free.app";
+
+  //Estados de las comparaciones
+  const [similarityScores, setSimilarityScores] = useState({
+    azure: null,
+    gemini: null,
+    qualitative: null
+  });
+
+  // Agrega esto con las demás funciones del componente
+  const interpretSimilarity = (score) => {
+    if (score >= 0.9) return "Coincidencia casi exacta";
+    if (score >= 0.7) return "Alta coincidencia"; 
+    if (score >= 0.5) return "Coincidencia moderada";
+    if (score >= 0.3) return "Baja coincidencia";
+    return "Muy poca coincidencia";
+  };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+    setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     if (!file) {
-      alert("Por favor selecciona un archivo PDF.");
+      setError("Por favor selecciona un archivo PDF.");
       setIsLoading(false);
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const response = await fetch("http://127.0.0.1:8000/upload_pdf/", {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${BASE_URL}/upload_pdf/`, {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       const data = await response.json();
       
-      if (response.ok) {
-        setPdfText(data.text);
-        setActiveTab('scenario');
-      } else {
-        alert("Hubo un problema al subir el archivo.");
+      if (!response.ok) {
+        throw new Error(data.detail || "Error al procesar el PDF");
       }
+
+      setPdfText(data.text);
+      setActiveStep('useCase');
     } catch (error) {
-      console.error("Error al subir el archivo:", error);
-      alert("Error al subir el archivo.");
+      setError(error.message);
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleScenarioSubmit = async (e) => {
-    e.preventDefault();
+  const handleGenerateUseCase = async (autoGenerate = true) => {
     setIsLoading(true);
-
-    if (!scenario.trim()) {
-      alert("Por favor ingresa un escenario válido.");
-      setIsLoading(false);
-      return;
-    }
-
+    setError(null);
+    
     try {
-      const response = await fetch("http://127.0.0.1:8000/solve_case/", {
+      const response = await fetch(`${BASE_URL}/generate_use_case/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
           pdf_text: pdfText,
-          scenario: scenario
+          generate_automatically: autoGenerate
         })
       });
 
       const data = await response.json();
       
-      if (response.ok) {
-        setAiResponse(data.ai_response);
-        setActiveTab('response');
-      } else {
-        alert("Hubo un problema al procesar el escenario.");
+      if (!response.ok) {
+        throw new Error(data.detail || "Error al generar caso de uso");
       }
+
+      setUseCase(data.use_case || '');
     } catch (error) {
-      console.error("Error al procesar el escenario:", error);
-      alert("Error al procesar el escenario.");
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCompareSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    if (!userResponse.trim()) {
-      alert("Por favor ingresa tu respuesta.");
-      setIsLoading(false);
+  const handleContinueToAnalysis = () => {
+    if (!useCase.trim()) {
+      setError("Por favor genera o escribe un caso de uso");
       return;
     }
+    setActiveStep('analysis');
+  };
 
+  const handleSolutionSubmit = async () => {
+    if (!userSolution.trim()) {
+      setError("Por favor ingresa tu solución");
+      return;
+    }
+  
+    setComparisonLoading(true);
+    setError(null);
+    setShowComparison(false); // Asegurar que no se muestre comparación inicialmente
+  
     try {
-      // Primero comparación textual
-      const compareResponse = await fetch("http://127.0.0.1:8000/compare_responses/", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          ai_response: aiResponse,
-          user_response: userResponse
-        })
-      });
-
-      const compareData = await compareResponse.json();
-      
-      if (compareResponse.ok) {
-        setSimilarity(compareData.similarity);
-        
-        // Luego evaluación cualitativa
-        const evalResponse = await fetch("http://127.0.0.1:8000/evaluate_responses/", {
+      // Solo obtener respuestas (parte rápida)
+      const [azureRes, geminiRes] = await Promise.all([
+        fetch(`${BASE_URL}/solve_case/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: new URLSearchParams({
             pdf_text: pdfText,
-            question: scenario,
-            ai_response: aiResponse,
-            user_response: userResponse
+            scenario: useCase
           })
-        });
-
-        const evalData = await evalResponse.json();
-        
-        if (evalResponse.ok) {
-          setEvaluation(evalData);
-          setActiveTab('comparison');
-        } else {
-          throw new Error("Error en evaluación cualitativa");
-        }
-      } else {
-        throw new Error("Error en comparación textual");
+        }),
+        fetch(`${BASE_URL}/solve_case_gemini/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            pdf_text: pdfText,
+            escenario: useCase
+          })
+        })
+      ]);
+  
+      const azureData = await azureRes.json();
+      const geminiData = await geminiRes.json();
+  
+      if (!azureRes.ok || !geminiRes.ok) {
+        throw new Error(azureData.detail || geminiData.detail || "Error al generar respuestas");
       }
+  
+      setAzureResponse(azureData.ai_response);
+      setGeminiResponse(geminiData.gemini_response);
+      setActiveStep('comparison');
+  
     } catch (error) {
-      console.error("Error al comparar respuestas:", error);
-      alert("Error al comparar respuestas.");
+      setError(error.message);
     } finally {
-      setIsLoading(false);
+      setComparisonLoading(false);
+    }
+  };
+  
+  // Añade esta NUEVA función justo después:
+  const handleCompareSolutions = async () => {
+    setComparisonLoading(true);
+    try {
+      const [azureCompare, geminiCompare, qualitativeEval] = await Promise.all([
+        fetch(`${BASE_URL}/compare_responses/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            ai_response: azureResponse,
+            user_response: userSolution
+          })
+        }),
+        fetch(`${BASE_URL}/compare_gemini_response/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            gemini_response: geminiResponse,
+            user_response: userSolution
+          })
+        }),
+        fetch(`${BASE_URL}/evaluate_three_responses/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            pdf_text: pdfText,
+            question: useCase,
+            azure_response: azureResponse,
+            gemini_response: geminiResponse,
+            user_response: userSolution
+          })
+        })
+      ]);
+  
+      const azureCompareData = await azureCompare.json();
+      const geminiCompareData = await geminiCompare.json();
+      const qualitativeData = await qualitativeEval.json();
+  
+      setSimilarityScores({
+        azure: azureCompareData.similarity,
+        gemini: geminiCompareData.similarity,
+        qualitative: qualitativeData
+      });
+  
+      setShowComparison(true);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setComparisonLoading(false);
     }
   };
 
-  const interpretSimilarity = (score) => {
-    if (score >= 0.9) return "Coincidencia casi exacta";
-    if (score >= 0.7) return "Alta coincidencia";
-    if (score >= 0.5) return "Coincidencia moderada";
-    if (score >= 0.3) return "Baja coincidencia";
-    return "Muy poca coincidencia";
+  const handleCombineResponses = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/combine_responses/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          pdf_text: pdfText,
+          azure_response: azureResponse,
+          gemini_response: geminiResponse,
+          user_response: userSolution
+        })
+      });
+      const data = await response.json();
+      setCombinedResponse(data.combined_solution);
+      setShowDownloadButton(true); // <- Activa el botón de descarga
+    } catch (error) {
+      setError("Error al combinar respuestas");
+    }
   };
 
-  const renderComparisonResults = () => {
-    return (
-      <div className="comparison-results">
-        <div className="similarity-section">
-          <h3>Análisis Textual</h3>
-          <div className="score-circle" style={{ 
-            backgroundColor: `hsl(${similarity * 120}, 70%, 50%)`
-          }}>
-            {Math.round(similarity * 100)}%
-          </div>
-          <p className="interpretation">
-            {interpretSimilarity(similarity)}
-          </p>
-        </div>
-
-        <div className="evaluation-section">
-          <h3>Análisis Cualitativo</h3>
-          <div className="scores-container">
-            <div className="score-box">
-              <h4>Precisión IA</h4>
-              <div className="score-bar">
-                <div 
-                  className="score-fill" 
-                  style={{ width: `${evaluation.ai_score * 100}%` }}
-                >
-                  {Math.round(evaluation.ai_score * 100)}%
-                </div>
-              </div>
-            </div>
-            
-            <div className="score-box">
-              <h4>Tu precisión</h4>
-              <div className="score-bar">
-                <div 
-                  className="score-fill" 
-                  style={{ width: `${evaluation.user_score * 100}%` }}
-                >
-                  {Math.round(evaluation.user_score * 100)}%
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="feedback-box">
-            <h4>Feedback detallado:</h4>
-            <p>{evaluation.feedback}</p>
-            {evaluation.both_correct && (
-              <div className="correct-badge">✅ Ambas respuestas son correctas</div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
+  const generarPDF = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('caso_uso', useCase);
+      formData.append('respuesta_usuario', userSolution);
+      formData.append('respuesta_azure', azureResponse);
+      formData.append('respuesta_gemini', geminiResponse);
+      formData.append('respuesta_combinada', combinedResponse);
+  
+      const response = await fetch(`${BASE_URL}/descargar-reporte/`, {
+        method: 'POST',
+        body: formData  // ¡Importante! No incluir headers 'Content-Type'
+      });
+  
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "reporte_final.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } else {
+        throw new Error('Error al descargar PDF');
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("No se pudo descargar el PDF");
+    }
   };
+  
 
   return (
     <div className="App">
       <header className="app-header">
-
-        {/* Nueva sección institucional */}
-  <div className="university-info">
-    <div className="logo-and-name">
-      <img 
-        src={logo}  
-        alt="Logo Universidad" 
-        className="university-logo"
-      />
-      <div className="university-text">
-        <h2 className="university-name">Universidad Central del Ecuador</h2>
-        <p className="course-info">Grupo 4 - Legislación</p>
-      </div>
-    </div>
-  </div>
+        <div className="university-info">
+          <div className="logo-and-name">
+            <img src={logo} alt="Logo Universidad" className="university-logo"/>
+            <div className="university-text">
+              <h2 className="university-name">Universidad Central del Ecuador</h2>
+              <p className="course-info">Grupo 4 - Legislación</p>
+            </div>
+          </div>
+        </div>
         <h1>📄 ChatPDF Comparador de Respuestas</h1>
-        <p>Sube un documento PDF, plantea un escenario y compara tu solución con la de la IA de Openai.</p>
+        <p>Sube un documento PDF para comenzar el análisis.</p>
       </header>
-
+  
       <main className="content">
-        {activeTab === 'upload' && (
+        {/* Paso 1: Subir PDF */}
+        {activeStep === 'upload' && (
           <section className="upload-section">
             <h2>Sube tu archivo PDF</h2>
+            {error && <div className="error-message">{error}</div>}
             <form onSubmit={handleSubmit} className="upload-form">
               <input
                 type="file"
@@ -248,112 +313,287 @@ function App() {
                 className="file-input"
                 required
               />
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? 'Subiendo...' : 'Subir PDF'}
+              <button 
+                type="submit" 
+                className="submit-button" 
+                disabled={isLoading}
+              >
+                {isLoading ? 'Procesando...' : 'Subir PDF'}
               </button>
             </form>
           </section>
         )}
-
-        {activeTab === 'scenario' && (
-          <section className="scenario-section">
-            <h2>Plantea tu caso de uso</h2>
-            <form onSubmit={handleScenarioSubmit} className="scenario-form">
+  
+        {/* Paso 2: Generar caso de uso */}
+        {activeStep === 'useCase' && (
+          <section className="use-case-section">
+            <h2>Generar caso de uso</h2>
+            {error && <div className="error-message">{error}</div>}
+            
+            <div className="use-case-options">
+              <button 
+                onClick={() => handleGenerateUseCase(true)}
+                className="generate-button"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Generando...' : '🪄 Generar automáticamente con IA'}
+              </button>
+              
+              <p className="or-divider">─ o ─</p>
+              
               <textarea
-                value={scenario}
-                onChange={(e) => setScenario(e.target.value)}
-                placeholder="Describe el escenario o caso que quieres analizar..."
-                className="scenario-input"
-                required
+                value={useCase}
+                onChange={(e) => setUseCase(e.target.value)}
+                placeholder="Escribe manualmente tu caso de uso aquí..."
+                className="use-case-input"
               />
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? 'Procesando...' : 'Obtener respuesta de la IA'}
-              </button>
-            </form>
-          </section>
-        )}
-
-        {activeTab === 'response' && (
-          <section className="response-section">
-            <h2>Respuesta del ChatPDF</h2>
-            <div className="response-box">
-              <h3>Tu escenario:</h3>
-              <p>{scenario}</p>
-              
-              <h3>Respuesta de la IA:</h3>
-              <div className="ai-response">
-                {aiResponse.split('\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-              
-              <h3>Tu respuesta:</h3>
-              <form onSubmit={handleCompareSubmit}>
-                <textarea
-                  value={userResponse}
-                  onChange={(e) => setUserResponse(e.target.value)}
-                  placeholder="Escribe tu respuesta para comparar con la IA..."
-                  className="user-input"
-                  required
-                />
-                <div className="button-group">
-                  <button 
-                    type="button"
-                    className="back-button"
-                    onClick={() => setActiveTab('scenario')}
-                  >
-                    Volver
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="submit-button "
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Comparando...' : 'Comparar respuestas'}
-                  </button>
-                </div>
-              </form>
             </div>
-          </section>
-        )}
-
-        {activeTab === 'comparison' && (
-          <section className="comparison-section">
-            <h2>Resultado de la comparación</h2>
-            <div className="comparison-box">
-              {evaluation && renderComparisonResults()}
-              
-              <div className="responses-comparison">
-                <div className="response-column">
-                  <h3>Respuesta de la IA:</h3>
-                  <div className="ai-response">
-                    {aiResponse.split('\n').map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="response-column">
-                  <h3>Tu respuesta:</h3>
-                  <div className="user-response">
-                    {userResponse.split('\n').map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            
+            <div className="action-buttons">
+              <button 
+                onClick={() => setActiveStep('upload')}
+                className="back-button"
+              >
+                Volver
+              </button>
               
               <button 
-                className="back-button"
-                onClick={() => setActiveTab('response')}
+                onClick={handleContinueToAnalysis}
+                className="submit-button"
+                disabled={isLoading || !useCase.trim()}
               >
-                Volver a comparar
+                Continuar al análisis
               </button>
             </div>
+          </section>
+        )}
+  
+        {/* Paso 3: Ingresar solución */}
+        {activeStep === 'analysis' && (
+          <section className="analysis-section">
+            <h2>Análisis de solución</h2>
+            {error && <div className="error-message">{error}</div>}
+  
+            <div className="case-review">
+              <h3>Tu caso de uso:</h3>
+              <div className="case-content">
+                {useCase.split('\n').map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+  
+            <div className="solution-input">
+              <h3>Ingresa tu solución:</h3>
+              <textarea
+                value={userSolution}
+                onChange={(e) => setUserSolution(e.target.value)}
+                placeholder="Escribe tu respuesta detallada aquí..."
+                className="solution-textarea"
+              />
+            </div>
+  
+            <div className="action-buttons">
+              <button 
+                onClick={() => setActiveStep('useCase')}
+                className="back-button"
+              >
+                Volver
+              </button>
+              
+              <button 
+                onClick={handleSolutionSubmit}
+                className="submit-button"
+                disabled={!userSolution.trim() || comparisonLoading}
+              >
+                {comparisonLoading ? 'Comparando...' : 'Continuar'}
+              </button>
+            </div>
+          </section>
+        )}
+  
+        {/* Paso 4: Comparación de soluciones */}
+        {activeStep === 'comparison' && (
+          <section className="comparison-section">
+            <h2>Comparación de soluciones</h2>
+            {error && <div className="error-message">{error}</div>}
+
+            {/* Mostrar siempre las soluciones */}
+            <div className="solutions-grid">
+              <div className="solution-card">
+                <h3>✍️ Tu solución</h3>
+                <div className="solution-content">
+                  {userSolution.split('\n').map((p, i) => <p key={i}>{p}</p>)}
+                </div>
+              </div>
+              <div className="solution-card">
+                <h3>🤖 Azure AI</h3>
+                <div className="solution-content">
+                  {azureResponse.split('\n').map((p, i) => <p key={i}>{p}</p>)}
+                </div>
+              </div>
+              <div className="solution-card">
+                <h3>🔮 Gemini</h3>
+                <div className="solution-content">
+                  {geminiResponse.split('\n').map((p, i) => <p key={i}>{p}</p>)}
+                </div>
+              </div>
+            </div>
+
+            {/* Contenedor de acciones con ambos botones */}
+            <div className="comparison-actions">
+              <button 
+                onClick={() => {
+                  setActiveStep('analysis');
+                  setShowComparison(false);
+                }}
+                className="back-button"
+              >
+                Volver
+              </button>
+              
+              {/* Botón de comparar solo si no se ha mostrado la comparación */}
+              {/* Botón de comparar (solo visible ANTES de mostrar resultados) */}
+              {!showComparison && (
+                <button 
+                  onClick={handleCompareSolutions}
+                  className="compare-button"
+                  disabled={comparisonLoading}
+                >
+                  {comparisonLoading ? 'Comparando...' : 'Comparar Soluciones'}
+                </button>
+              )}
+
+              {/* Botón de combinar (solo visible DESPUÉS de mostrar resultados) */}
+              {showComparison && (
+                <button 
+                  onClick={handleCombineResponses}
+                  className="submit-button"
+                >
+                  Combinar Mejores Puntos
+                </button>
+              )}
+            </div>
+
+            {/* Mostrar gráficos solo si showComparison es true */}
+            {showComparison && (
+              <>
+              <h3 className="textual-title">Análisis Textual</h3> {/* Título agregado */}
+              <div className="textual-comparison">
+                <div className="similarity-chart">
+                  <h4>Similitud con Azure AI</h4>
+                  <div className="circle-chart" style={{ 
+                    background: `conic-gradient(#4299e1 ${similarityScores.azure * 100}%, #e2e8f0 0)` 
+                  }}>
+                    <span>{Math.round(similarityScores.azure * 100)}%</span>
+                  </div>
+                  <p>{interpretSimilarity(similarityScores.azure)}</p>
+                </div>
+                <div className="similarity-chart">
+                  <h4>Similitud con Gemini</h4>
+                  <div className="circle-chart" style={{ 
+                    background: `conic-gradient(#ed8936 ${similarityScores.gemini * 100}%, #e2e8f0 0)` 
+                  }}>
+                    <span>{Math.round(similarityScores.gemini * 100)}%</span>
+                  </div>
+                  <p>{interpretSimilarity(similarityScores.gemini)}</p>
+                </div>
+              </div>
+            </>
+          )}
+
+            {showComparison && similarityScores.qualitative && (
+              <div className="qualitative-analysis">
+                <h3>Análisis Cualitativo</h3>
+                
+                <div className="qualitative-metrics">
+                  <div className="metric">
+                    <h4>Coherencia Normativa</h4>
+                    <div className="bars-container">
+                      <div className="bar-wrapper">
+                        <span className="label">Azure</span>
+                        <div className="bar-background">
+                          <div 
+                            className="bar azure-bar" 
+                            style={{ width: `${similarityScores.qualitative.puntuaciones.azure.coherencia}%` }}
+                          >
+                            <span className="percentage">{similarityScores.qualitative.puntuaciones.azure.coherencia}%</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bar-wrapper">
+                        <span className="label">Gemini</span>
+                        <div className="bar-background">
+                          <div 
+                            className="bar gemini-bar" 
+                            style={{ width: `${similarityScores.qualitative.puntuaciones.gemini.coherencia}%` }}
+                          >
+                            <span className="percentage">{similarityScores.qualitative.puntuaciones.gemini.coherencia}%</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bar-wrapper">
+                        <span className="label">Tu Respuesta</span>
+                        <div className="bar-background">
+                          <div 
+                            className="bar user-bar" 
+                            style={{ width: `${similarityScores.qualitative.puntuaciones.usuario.coherencia}%` }}
+                          >
+                            <span className="percentage">{similarityScores.qualitative.puntuaciones.usuario.coherencia}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Repetir para Precisión y Aplicabilidad */}
+                </div>
+                
+                <div className="qualitative-feedback">
+                  <h4>Evaluación Comparativa</h4>
+                  <p>{similarityScores.qualitative.analisis}</p>
+                  
+                  <div className="best-response">
+                    <strong>Mejor respuesta:</strong> 
+                    <span className={`tag ${
+                      similarityScores.qualitative.mejor_respuesta === 'azure' ? 'azure-tag' :
+                      similarityScores.qualitative.mejor_respuesta === 'gemini' ? 'gemini-tag' :
+                      'user-tag'
+                    }`}>
+                      {similarityScores.qualitative.mejor_respuesta === 'azure' ? 'Azure AI' :
+                      similarityScores.qualitative.mejor_respuesta === 'gemini' ? 'Gemini' : 'Tu respuesta'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {combinedResponse && (
+              <div className="combined-solution">
+                <h3><span style={{ color: "#6b46c1" }}>✨</span> Solución Combinada</h3>
+                <div className="solution-content">
+                  {combinedResponse.split('\n').map((p, i) => <p key={i}>{p}</p>)}
+                </div>
+
+                {/* Botón de descarga (solo visible después de combinar) */}
+                {showDownloadButton && (
+                  <button 
+                    onClick={() => generarPDF()} 
+                    className="download-button"
+                    style={{ marginTop: '20px', backgroundColor: '#4CAF50' }}
+                  >
+                    📥 Descargar PDF con Reporte
+                  </button>
+                )}
+              </div>
+            )}
           </section>
         )}
       </main>
     </div>
+    
   );
 }
 

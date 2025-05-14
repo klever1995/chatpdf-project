@@ -1,0 +1,103 @@
+# PROMPT BÁSICO (generar_respuesta)
+Según el siguiente contenido del documento:
+
+{texto_pdf}
+
+Responde al siguiente escenario aplicado a este contenido:
+
+{escenario}
+
+# PROMPT PARA CASO DE USO
+Como consultor experto en normativas técnicas, genera UN CASO DE USO REALISTA basado en este documento.
+El formato debe ser:
+
+[CONTEXTO EMPRESARIAL]
+- Tipo de organización (ej: empresa de software médio, consultora TI multinacional)
+- Sector industrial (ej: financiero, salud, gobierno)
+- Situación actual (1-2 oraciones)
+
+[PROBLEMA CONCRETO]
+- Descripción detallada del problema que requiere aplicar esta normativa
+- Consecuencias de no resolverlo (ej: multas, pérdida de contratos)
+- Necesidad específica que justifica usar este estándar
+
+Reglas:
+1. Máximo 2 párrafos (6-8 oraciones total)
+2. Basado estrictamente en el ámbito de aplicación del documento
+3. Usar ejemplos realistas (no hipotéticos)
+4. Sin lenguaje técnico complejo
+5. Incluir datos contextuales específicos (tamaño empresa, ubicación, etc.)
+
+Ejemplo:
+"Una consultora de TI en Quito con 50 empleados necesita evaluar sus procesos de desarrollo para participar en una licitación del Ministerio de Salud que exige certificación SPICE Nivel 3. Actualmente tienen evaluaciones inconsistentes entre proyectos, lo que ha causado rechazo en 3 licitaciones internacionales el último año."
+
+Documento normativo:
+{texto_pdf[:8000]}
+
+# PROMPT EVALUACIÓN (JSON)
+Evalúa estas respuestas según 3 criterios (0-100%):
+- Coherencia normativa: Alineación con estándares
+- Precisión técnica: Exactitud técnica
+- Aplicabilidad práctica: Utilidad real
+
+[CONTEXTO]
+Documento: {texto_pdf[:3000]}...
+Pregunta: {pregunta}
+
+[RESPUESTAS]
+- Azure: {respuesta_azure[:500]}...
+- Gemini: {respuesta_gemini[:500]}...
+- Usuario: {respuesta_usuario[:500]}...
+
+Devuelve SOLO JSON con:
+{{
+    "puntuaciones": {{
+        "azure": {{"coherencia": 0-100, "precision": 0-100, "aplicabilidad": 0-100}},
+        "gemini": {{"coherencia": 0-100, "precision": 0-100, "aplicabilidad": 0-100}},
+        "usuario": {{"coherencia": 0-100, "precision": 0-100, "aplicabilidad": 0-100}}
+    }},
+    "analisis": "Comparación concisa (2-3 oraciones)",
+    "mejor_respuesta": "azure|gemini|usuario"
+}}
+
+# PROMPT COMBINAR RESPUESTAS
+**Objetivo**: Genera un análisis integrado que combine las perspectivas clave de las 3 respuestas, 
+priorizando claridad y coherencia normativa. Sigue estas instrucciones:
+
+1. **Contexto**: Usa el documento base como referencia principal.
+2. **Síntesis**: Integra los aportes únicos de cada fuente:
+- Azure: Fortalezas técnicas
+- Gemini: Perspectiva contextual
+- Usuario: Enfoque práctico/normativo
+3. **Formato**:
+- Párrafo introductorio (2-3 líneas).
+- 3-5 ideas principales (cada una con 1-2 oraciones).
+- Conclusión breve (opcional).
+4. **Estilo**: Lenguaje formal pero fluido, como un informe técnico-jurídico.
+
+[DOCUMENTO BASE]: {texto_pdf[:1000]}...
+[RESUMEN AZURE]: {resumen_azure}
+[RESUMEN GEMINI]: {resumen_gemini}
+[RESUMEN USUARIO]: {resumen_usuario}
+
+# PROMPT GEMINI (Análisis Normativo)
+Eres un experto en análisis normativo. Basa tu respuesta EXCLUSIVAMENTE en este documento:
+
+--- TEXTO NORMATIVO ---
+{texto_pdf}
+--- FIN DEL DOCUMENTO ---
+
+Escenario a resolver:
+{escenario}
+
+Instrucciones:
+1. Analiza el documento completo
+2. Identifica artículos/secciones aplicables
+3. Fundamenta tu respuesta citando los fragmentos relevantes
+4. Si el escenario no está regulado, indícalo claramente
+5. Estructura tu respuesta en:
+- Base legal (artículos aplicables)
+- Interpretación técnica
+- Recomendación práctica
+
+Respuesta:
